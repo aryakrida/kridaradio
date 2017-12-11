@@ -1,0 +1,254 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Krida Radio</title>
+       
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"><!-- icons -->
+		<link rel="stylesheet" type="text/css" href="css/hap_bg.css" />
+        
+        <script type="text/javascript" src="js/jquery-1.12.0.min.js"></script>
+        <script type="text/javascript" src="js/jquery.easing.1.3.js"></script>
+        <script type="text/javascript" src="js/imageplayer.js"></script>
+        <script type="text/javascript" src="js/new_cb.js"></script>
+        <script type="text/javascript" src="js/new.js"></script>			
+        <script type="text/javascript">
+
+            /* START SLIDESHOW CODE */             
+
+            function initSlideshow(counter){
+                var arr = [];
+                
+                jQuery('#playlist-bg-images').find('li').eq(counter).find('img').each(function(){
+                    arr.push($(this).attr('src'));
+                });
+
+                _HAPImagePlayer.init(arr);
+            }
+
+            /* END SLIDESHOW CODE */
+
+            /* START LYRICS CODE */   
+
+            var intervalID,
+            interval = 100, 
+            lyricsOn, 
+            lyricsArr = [],
+            lyricsLen = 0,
+            lyricsCont;
+
+            function initLyrics(counter){
+                if(intervalID) clearInterval(intervalID);
+                lyricsCont.empty();
+
+                lyricsArr = [];
+                var obj, item;
+                $('#playlist-lyrics').find('li').eq(counter).find('p').each(function(){
+                    item = $(this).clone().css({'opacity':0, height:0, marginBottom:0}).appendTo(lyricsCont);
+                    obj = {item: item, start: parseFloat(item.attr('data-start'),10), end: parseFloat(item.attr('data-end'),10)};
+                    lyricsArr.push(obj);
+                });
+                lyricsLen = lyricsArr.length;
+                
+                if(lyricsLen){
+                    intervalID = setInterval(displayLyrics, interval);  
+                    lyricsOn = true; 
+                }
+            }
+
+            function toggleLyrics(){
+                if(intervalID) clearInterval(intervalID);
+                if(lyricsLen == 0)return false;
+                if(lyricsOn){
+                    var i, item;
+                    for(i = 0; i < lyricsLen; i++){
+                        item = lyricsArr[i].item;
+                        item.stop(true).css({'opacity':0, height:0, marginBottom:0});
+                        item.visible = false;
+                    }
+                }else{
+                    intervalID = setInterval(displayLyrics, interval);
+                }
+                lyricsOn = !lyricsOn;
+            }
+
+            function hideLyrics(){
+                if(intervalID) clearInterval(intervalID);
+                if(lyricsLen == 0)return false;
+                if(lyricsOn){
+                    var i, item;
+                    for(i = 0; i < lyricsLen; i++){
+                        item = lyricsArr[i].item;
+                        item.stop(true).css({'opacity':0, height:0, marginBottom:0});
+                        item.visible = false;
+                    }
+                    intervalID = setInterval(displayLyrics, interval);
+                }
+            }
+
+            function displayLyrics(){
+               
+                var ct = hap_player.getCurrentTime();
+
+                if(typeof ct != undefined){
+                    var j, elem, show_t, hide_t, item;
+                    for(j = 0; j < lyricsLen; j++){
+                        elem = lyricsArr[j], show_t = elem.start, hide_t = elem.end, item = elem.item;
+
+                        if(ct >= show_t && ct <= hide_t){
+                            if(!item.visible){
+                                item.stop(true).css({'opacity':0, height:'auto', marginBottom:10}).animate({opacity:1}, 1000);
+                                item.visible = true;
+                            }
+                        }else{
+                            if(item.visible){
+                                item.stop(true).animate({
+                                    opacity: 0
+                                }, 1000).animate({
+                                    height: 0,
+                                    marginBottom:0
+                                }, 500);
+                                item.visible = false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            /* END LYRICS CODE */  
+
+            var hap_player;  
+            jQuery(document).ready(function($){
+                
+                var settings = {
+                    instanceName:"bg",
+                    sourcePath:"",
+                    activePlaylist:"playlist-radio",
+                    activeItem:0,
+                    volume:0.5,
+                    autoPlay:true,
+                    preload:"auto",
+                    randomPlay:false,
+                    loopingOn:true,
+                    autoAdvanceToNextMedia:true,
+                    youtubeAppId:"",
+                    soundCloudAppId:"",
+                    useTooltips:true,
+                    useKeyboardNavigationForPlayback:false,
+                    useShare:true,
+                    facebookAppId:"",
+                    useNumbersInPlaylist: false,
+                    numberTitleSeparator: ".  ",
+                    artistTitleSeparator: " - ",
+                    dataInterval:20
+                };
+
+                /* START SLIDESHOW CODE */
+
+                var data = {
+                    holder:$("#hap-bg"),
+                    slideshowTimeout:3000
+                };
+                _HAPImagePlayer = new HAPImagePlayer(data);
+                $(_HAPImagePlayer).on('HAPImagePlayer.IMAGE_ON', function(e, data){
+                   
+                }); 
+
+                /* END SLIDESHOW CODE */   
+
+                lyricsCont = $("#hap-lyrics-cont");
+
+                hap_player = $("#hap-wrapper").hap(settings);
+
+            });
+
+        </script>
+        
+	</head>
+	<body>
+             
+        <div id="hap-bg"></div>
+
+        <!-- player code -->   
+        <div id="hap-wrapper">
+             
+            <div class="hap-seekbar-inner hap-tooltip-item hap-tooltip-bottom">
+			<iframe frameborder="0" height="auto" scrolling="no" src="http://u.klikhost.com/np.php?ip=s3.vinhostmedia.com&amp;port=9318" width="100%" high="25"></iframe>
+            </div>
+
+            <div class="hap-info">
+                <p class="hap-player-title"></p>
+                <p class="hap-player-artist"></p>
+            </div>
+
+            <div id="hap-lyrics-cont"></div>
+
+            <div class="hap-player-controls">
+
+                <div class="hap-playback-toggle hap-contr-btn"><i class="fa fa-play hap-contr-btn-i hap-icon-color"></i></div>
+
+                <div class="hap-lyrics-toggle hap-contr-btn hap-tooltip-item" data-tooltip="Info"><i class="fa fa-list-ul hap-contr-btn-i hap-icon-color"></i></div>
+
+                <div class="hap-share-toggle hap-contr-btn">
+                    <div class="hap-share-holder">
+                        <div class="hap-share-item hap-contr-btn hap-tooltip-item" data-type="tumblr" data-tooltip="Share on Tumblr"><i class="fa fa-tumblr hap-contr-btn-i hap-icon-color"></i></div>
+                        <div class="hap-share-item hap-contr-btn hap-tooltip-item" data-type="twitter" data-tooltip="Share on Twitter"><i class="fa fa-twitter hap-contr-btn-i hap-icon-color"></i></div>
+                        <div class="hap-share-item hap-contr-btn hap-tooltip-item" data-type="facebook" data-tooltip="Share on Facebook"><i class="fa fa-facebook hap-contr-btn-i hap-icon-color"></i></div>
+                        <div class="hap-share-item hap-contr-btn hap-tooltip-item" data-type="googleplus" data-tooltip="Share on Google+"><i class="fa fa-google-plus hap-contr-btn-i hap-icon-color"></i></div>
+                    </div>
+                    <div class="hap-share-toggle-btn"><i class="fa fa-share-alt hap-contr-btn-i hap-icon-color"></i></div>
+                </div>
+
+                <div class="hap-volume-wrapper">
+                    <div class="hap-player-volume hap-contr-btn"><i class="fa fa-volume-up hap-contr-btn-i hap-contr-btn-vol-i hap-icon-color"></i></div>
+                    <div class="hap-volume-seekbar hap-contr-btn hap-vertical hap-tooltip-item">
+                        <div class="hap-volume-bg"></div>
+                        <div class="hap-volume-level"></div>
+                        <div class="hap-volume-seekbar-shadow-hider"></div>
+                    </div> 
+                </div>  
+            </div>  
+
+			<div class="hap-tooltip"><p></p></div>  	
+        
+        </div>  
+
+        <!-- PLAYLIST LIST -->
+        <div id="hap-playlist-list">
+             <ul id="playlist-radio">
+			 <li class="hap-playlist-item" data-type="audio" data-mp3="http://s3.vinhostmedia.com:9318/;" data-artist="KRIDA Radio" data-title="Streaming" data-thumb="icon.png" data-share="http://vprojectmedia.com"></li>
+			 </ul>
+             
+        </div>
+
+        <ul id="playlist-bg-images" style="display:none;">
+            <li>
+                <img src="img/01.png" alt=""/>
+                <img src="img/02.png" alt=""/>
+                <img src="img/03.png" alt=""/>
+                <img src="img/04.png" alt=""/>
+            </li>
+         </ul>
+
+         <ul id="playlist-lyrics" style="display:none;">
+            <li>
+                <p data-start="1" data-end="5">
+				Radio Streaming Indonesia</p>
+                <p data-start="3" data-end="7">
+				Dipancar luaskan dari kota Yogyakarta Indonesia</p>
+                <p data-start="10" data-end="17">
+				Live Streaming 24 Jam Nonstop</p>
+                <p data-start="12" data-end="17">
+				Beragam Gendre Musik Ada di sini.</p>
+                <p data-start="22" data-end="28">
+				Nikmati Terus Musik Asik Sepanjang Hari</p>
+                <p data-start="24" data-end="37">
+				Contact Us :<br> +628510-555-4-999</p>
+                <p data-start="42" data-end="57">
+				Krida Radio its Entertainment On Sky</p> 
+            </li>
+         </ul>
+		
+	</body>
+</html>
