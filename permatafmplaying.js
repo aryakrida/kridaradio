@@ -1,22 +1,3 @@
-<body style='background-color:#00000000;color:red'>
-    <style>
-        .gradient-text{
-font-family: Arial;
-   background: -webkit-linear-gradient(30deg, #ff0000, #0000ff, #ff6600 );
-   -webkit-background-clip: text;
-   -webkit-text-fill-color: transparent;
-}
-    </style>
-<span class="gradient-text">
-<script>
-
-<!--
-
-/*
-Auto Refresh Page with Time script
-*/
-
-//enter refresh time in "minutes:seconds" Minutes should range from 0 to inifinity. Seconds should range from 0 to 59
 var limit="0:30"
 
 if (document.images){
@@ -42,10 +23,9 @@ setTimeout("beginrefresh()",1000)
 }
 
 window.onload=beginrefresh
-//-->
-</script>
 
-<?php
+
+
 
 function getMp3StreamTitle($streamingUrl, $interval, $offset = 0, $headers = true)
 {
@@ -88,7 +68,3 @@ function getMp3StreamTitle($streamingUrl, $interval, $offset = 0, $headers = tru
    $nowplaying= (getMp3StreamTitle('https://play.kridaradio.com/radio/8330/permatafm', 16000));
    echo "$nowplaying";
 
-
-?>
-</div>
-</span></body>
